@@ -137,7 +137,7 @@ class Translation extends Model
     {
         return implode('_', [
             Str::snake(Str::plural(class_basename($parent))),
-            Str::snake(Str::plural(config('translatable.translation_suffix', 'Translation')))
+            Str::snake(Str::plural(config('translatable.translation_suffix', 'll')))
         ]);
     }
 }

@@ -2,6 +2,7 @@
     "name": "shanginn/yalt",
     "description": "Yet Another Laravel Translator for Eloquent models (Yalt)",
     "keywords": ["yalt", "translator", "translation", "database translation", "eloquent", "laravel"],
+    "homepage": "https://github.com/shanginn/Yet-Another-Laravel-Translator",
     "license": "MIT",
     "authors": [
         {

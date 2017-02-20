@@ -73,12 +73,15 @@ return [
     | Translation Suffix
     |--------------------------------------------------------------------------
     |
-    | Defines the default 'Translation' class suffix. For example, if
-    | you want to use CountryTrans instead of CountryTranslation
-    | application, set this to 'Trans'.
+    | Defines the default table suffix. For example, if you want to use
+    | table things_translations instead of things_lls, set this
+    | variable to 'translation'
+    |
+    | See method guessTranslationsTable in /Eloquent/Translation.php for more info
+    | TODO: singular table name (ex. thing_lls)
     |
     */
-    'translation_suffix' => 'Ll',
+    'translation_suffix' => 'll',
 
     /*
     |--------------------------------------------------------------------------
