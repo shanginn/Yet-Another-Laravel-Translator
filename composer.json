@@ -1,0 +1,26 @@
+{
+    "name": "shanginn/yalt",
+    "description": "Yet Another Laravel Translator for Eloquent models (Yalt)",
+    "keywords": ["yalt", "translator", "translation", "database translation", "eloquent", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shangin Nikolai",
+            "email": "shanginn@gmail.com",
+            "homepage": "http://shanginn.ru/"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "illuminate/support": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shanginn\\Yalt\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "preferred-install": "dist"
+    }
+}
