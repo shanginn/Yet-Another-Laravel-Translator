@@ -37,7 +37,7 @@ class YaltServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/config/yalt.php' => config_path('courier.php'),
-        ]);
+            __DIR__ . '/config/yalt.php' => config_path('yalt.php'),
+        ], 'config');
     }
 }
