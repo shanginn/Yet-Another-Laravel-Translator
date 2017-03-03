@@ -232,10 +232,11 @@ trait Translatable
     {
         $attributes = parent::toArray();
 
-        if ($this->relationLoaded('translations') || config('translatable.loads_translations')) {
+        if ($this->relationLoaded('translations') || config('yalt.loads_translations')) {
             $attributes = array_merge(
                 $attributes,
-                $this->getArrayableItems($this->getTranslationsFor($this->locale()))
+                //$this->getArrayableItems() TODO:
+                $this->getTranslationsFor($this->locale())
             );
         }
 
@@ -257,7 +258,7 @@ trait Translatable
     {
         return $this->defaultLocale ??
             $this->setDefaultLocale(
-                config('translatable.locale') ?? app('translator')->getLocale()
+                config('yalt.locale') ?? app('translator')->getLocale()
             );
     }
 
@@ -290,6 +291,6 @@ trait Translatable
      */
     public function getLocaleKey()
     {
-        return $this->localeKey ?? config('translatable.locale_key', 'locale');
+        return $this->localeKey ?? config('yalt.locale_key', 'locale');
     }
 }
