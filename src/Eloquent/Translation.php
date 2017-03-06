@@ -128,7 +128,7 @@ class Translation extends Model
             return $trace['function'] === 'translations';
         });
 
-        dd($caller);
+        dd('@guessTranslatableModelName:', $caller);
 
         return !is_null($caller) ? class_basename($caller['class']) : null;
     }

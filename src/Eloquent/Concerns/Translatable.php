@@ -91,10 +91,6 @@ trait Translatable
             if (!$instance->getConnectionName() && $this->connection) {
                 $instance->setConnection($this->connection);
             }
-
-            if (!$instance->getFillable()) {
-                $instance->fillable($this->getTranslatable());
-            }
         });
     }
 
