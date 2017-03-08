@@ -121,22 +121,16 @@ trait Translatable
 
         foreach ($attributes as $key => $value) {
             if ($this->isTranslatable($key)) {
-                if (!is_array($value)) {
-                    $translations[$this->locale()][$key] = $value;
-
-                    continue;
-                }
-
                 foreach ($value as $locale => $localization) {
                     if (Yalt::isValidLocale($locale)) {
                         $translations[$locale][$key] = $localization;
+                    } else {
+                        dd($locale);
                     }
                 }
-            } elseif (Yalt::isValidLocale($key)) {
-                $this->translationTo($key)->fill($value);
-            } else continue;
 
-            unset($attributes[$key]);
+                unset($attributes[$key]);
+            }
         }
 
         return $translations;
@@ -227,16 +221,18 @@ trait Translatable
     public function toArray()
     {
         $attributes = parent::toArray();
+        $translated = [];
 
         if ($this->relationLoaded('translations') || config('yalt.loads_translations')) {
-            $attributes = array_merge(
-                $attributes,
-                //$this->getArrayableItems() TODO:
-                $this->getTranslationsFor($this->locale())
-            );
+            foreach ($this->translations as $translation) {
+                foreach ($this->getTranslatable() as $field) {
+                    isset($translated[$field]) || $translated[$field] = [];
+                    $translated[$field][$translation->locale] = $translation->$field;
+                }
+            }
         }
 
-        return $attributes;
+        return array_merge($attributes, $translated);
     }
 
     /**
