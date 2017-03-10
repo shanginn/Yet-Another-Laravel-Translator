@@ -230,6 +230,8 @@ trait Translatable
                     $translated[$field][$translation->locale] = $translation->$field;
                 }
             }
+
+            unset($attributes['translations']);
         }
 
         return array_merge($attributes, $translated);
