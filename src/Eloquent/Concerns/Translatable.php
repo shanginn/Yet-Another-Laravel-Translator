@@ -2,8 +2,10 @@
 
 namespace Shanginn\Yalt\Eloquent\Concerns;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Shanginn\Yalt\Eloquent\Scopes\JoinTranslationsTable;
 use Shanginn\Yalt\Eloquent\Translation;
 use Yalt;
 
@@ -72,11 +74,9 @@ trait Translatable
         $instance = $this->newTranslation();
 
         $localKey = $this->getKeyName();
-        $foreignKey = $instance->getTable() . '.' . ($this->translationForeignKey ?? $this->getForeignKey());
+        $foreignKey = $instance->getTable() . '.' . $this->getForeignKey();
 
-        return new HasMany(
-            $instance->newQuery(), $this, $foreignKey, $localKey
-        );
+        return new HasMany($instance->newQuery(), $this, $foreignKey, $localKey);
     }
 
     /**
@@ -100,13 +100,10 @@ trait Translatable
      * @param  array  $attributes
      * @return array
      */
-    protected function translatableFromArray(array $attributes)
+    public function translatableFromArray(array $attributes)
     {
-        if (count($this->getTranslatable()) > 0) {
-            return array_intersect_key($attributes, array_flip($this->getTranslatable()));
-        }
-
-        return [];
+        return count($this->getTranslatable()) ?
+            array_intersect_key($attributes, array_flip($this->getTranslatable())) : [];
     }
 
     /**
@@ -115,7 +112,7 @@ trait Translatable
      * @param  array  &$attributes
      * @return array
      */
-    public function translationsFromArray(array &$attributes)
+    protected function extractTranslationsFromAttributes(array &$attributes)
     {
         $translations = [];
 
@@ -125,7 +122,7 @@ trait Translatable
                     if (Yalt::isValidLocale($locale)) {
                         $translations[$locale][$key] = $localization;
                     } else {
-                        dd($locale);
+                        dd('TODO: add proper exception.\n Unsupported locale:', $locale);
                     }
                 }
 
@@ -206,7 +203,7 @@ trait Translatable
     public function fill(array $attributes)
     {
         if (count($this->translatableFromArray($attributes))) {
-            foreach($this->translationsFromArray($attributes) as $locale => $values) {
+            foreach ($this->extractTranslationsFromAttributes($attributes) as $locale => $values) {
                 $this->translationTo($locale)->fill($values);
             }
         }
@@ -221,20 +218,28 @@ trait Translatable
     public function toArray()
     {
         $attributes = parent::toArray();
-        $translated = [];
 
         if ($this->relationLoaded('translations') || config('yalt.loads_translations')) {
-            foreach ($this->translations as $translation) {
-                foreach ($this->getTranslatable() as $field) {
-                    isset($translated[$field]) || $translated[$field] = [];
-                    $translated[$field][$translation->locale] = $translation->$field;
-                }
-            }
+            $translated = $this->getTranslatedAttributes();
 
             unset($attributes['translations']);
         }
 
         return array_merge($attributes, $translated);
+    }
+
+    protected function getTranslatedAttributes()
+    {
+        $translated = [];
+
+        foreach ($this->translations as $translation) {
+            foreach ($this->getTranslatable() as $field) {
+                isset($translated[$field]) || $translated[$field] = [];
+                $translated[$field][$translation->locale] = $translation->$field;
+            }
+        }
+
+        return $translated;
     }
 
     /**
@@ -286,5 +291,38 @@ trait Translatable
     public function getLocaleKey()
     {
         return $this->localeKey ?? config('yalt.locale_key', 'locale');
+    }
+
+    public static function joinTranslationsTable(\Closure $callback = null)
+    {
+        static::addGlobalScope(new JoinTranslationsTable($callback));
+    }
+
+    /**
+     * Scope a query to order results by one or many translatable fields.
+     *
+     * @param array $orders
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function addOrderByTranslatableScope($orders)
+    {
+        $model = new static;
+        $orders = $model->translatableFromArray($orders);
+        $table = $model->newTranslation()->getTable();
+
+        static::joinTranslationsTable(function (Builder $builder) use ($orders, $table) {
+            if (empty((array) $builder->getQuery()->columns)) {
+                $builder->select((new static)->getTable() . '.*');
+            }
+
+            foreach ($orders as $column => $rules) {
+                $transOrderColumn = '_order-by-translated-' . $column;
+
+                $builder
+                    ->addSelect($table . '.' . $column . ' as ' . $transOrderColumn)
+                    ->where('locale', '=', $rules['lang'])
+                    ->orderBy($transOrderColumn, $rules['direction']);
+            }
+        });
     }
 }
