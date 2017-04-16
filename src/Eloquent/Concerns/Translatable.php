@@ -80,6 +80,19 @@ trait Translatable
     }
 
     /**
+     * Get an attribute from the model.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function getAttribute($key)
+    {
+        return $this->isTranslatable($key) ?
+            $this->getTranslationsFor('en')[$key] :
+            parent::getAttribute($key);
+    }
+
+    /**
      * Create a new Translation model instance for a related model.
      *
      * @param array $attributes
@@ -293,9 +306,9 @@ trait Translatable
         return $this->localeKey ?? config('yalt.locale_key', 'locale');
     }
 
-    public static function joinTranslationsTable(\Closure $callback = null)
+    public static function joinTranslationsTable(\Closure $callback = null, $joinType = 'right')
     {
-        static::addGlobalScope(new JoinTranslationsTable($callback));
+        static::addGlobalScope(new JoinTranslationsTable($callback, $joinType));
     }
 
     /**
@@ -320,9 +333,9 @@ trait Translatable
 
                 $builder
                     ->addSelect($table . '.' . $column . ' as ' . $transOrderColumn)
-                    ->where('locale', '=', $rules['lang'])
+                    ->where($table . '.' . 'locale', '=', $rules['lang'])
                     ->orderBy($transOrderColumn, $rules['direction']);
             }
-        });
+        }, 'right');
     }
 }

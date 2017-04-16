@@ -65,9 +65,9 @@ class Yaltor
         return config('translatable.locale_separator', '-');
     }
 
-    public function isValidLocale($locale)
+    public static function isValidLocale($locale)
     {
-        return in_array($locale, $this->getLocales());
+        return in_array($locale, static::getLocales());
     }
 
     /**

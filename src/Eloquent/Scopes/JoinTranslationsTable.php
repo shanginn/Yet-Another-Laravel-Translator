@@ -9,14 +9,20 @@ use Illuminate\Database\Eloquent\Builder;
 class JoinTranslationsTable implements Scope
 {
     protected $callback;
+    /**
+     * @var string
+     */
+    private $joinType;
 
     /**
      * JoinTranslationsTable constructor.
      * @param callable|null $callback
+     * @param string $joinType
      */
-    public function __construct(callable $callback = null)
+    public function __construct(callable $callback = null, $joinType = 'right')
     {
         $this->callback = $callback;
+        $this->joinType = $joinType;
     }
 
     /**
@@ -34,7 +40,7 @@ class JoinTranslationsTable implements Scope
             $model->getTable() . '.' . $model->getKeyName(),
             '=',
             $table . '.' . $model->getForeignKey(),
-            'right'
+            $this->joinType
         );
 
         $this->callback && call_user_func($this->callback, $query);
