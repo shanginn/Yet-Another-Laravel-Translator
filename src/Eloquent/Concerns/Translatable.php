@@ -87,9 +87,8 @@ trait Translatable
      */
     public function getAttribute($key)
     {
-        return $this->isTranslatable($key) ?
-            $this->getTranslationsFor('en')[$key] :
-            parent::getAttribute($key);
+        return $this->isTranslatable($key) && ($translated = $this->getTranslatedAttributes()[$key] ?? false) ?
+            $translated : parent::getAttribute($key);
     }
 
     /**
