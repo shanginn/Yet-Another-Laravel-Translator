@@ -2,18 +2,20 @@
 
 namespace Shanginn\Yalt\Eloquent\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Shanginn\Yalt\Eloquent\Scopes\JoinTranslationsTable;
 use Shanginn\Yalt\Eloquent\Translation;
+use Shanginn\Yalt\Http\Exceptions\UnsupportedLocaleException;
 use Yalt;
 
 /**
  * @property array $translatable Array with the fields translated in the Localizations table.
  * @property Collection[Translation] $this->translations
  *
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin Model
  */
 trait Translatable
 {
@@ -134,7 +136,7 @@ trait Translatable
                     if (Yalt::isValidLocale($locale)) {
                         $translations[$locale][$key] = $localization;
                     } else {
-                        dd('TODO: add proper exception.\n Unsupported locale:', $locale);
+                        throw new UnsupportedLocaleException($locale);
                     }
                 }
 
@@ -240,14 +242,17 @@ trait Translatable
         return array_merge($attributes, $translated);
     }
 
+    /**
+     * @return array
+     */
     protected function getTranslatedAttributes()
     {
         $translated = [];
 
         foreach ($this->translations as $translation) {
             foreach ($this->getTranslatable() as $field) {
-                isset($translated[$field]) || $translated[$field] = [];
-                $translated[$field][$translation->locale] = $translation->$field;
+                isset($translated[$field]) || $translated[$field] = (object) [];
+                $translated[$field]->{$translation->locale} = $translation->$field;
             }
         }
 

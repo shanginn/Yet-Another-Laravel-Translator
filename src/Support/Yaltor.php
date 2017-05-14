@@ -65,6 +65,15 @@ class Yaltor
         return config('translatable.locale_separator', '-');
     }
 
+    /**
+     * @return null|string
+     */
+    public function getLocaleFromRequest()
+    {
+        return static::isValidLocale($requestLocale = \Request::header('Accept-Language')) ?
+            $requestLocale : null;
+    }
+
     public static function isValidLocale($locale)
     {
         return in_array($locale, static::getLocales());
