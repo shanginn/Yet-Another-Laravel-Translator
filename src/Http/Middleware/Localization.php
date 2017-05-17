@@ -22,7 +22,7 @@ class Localization
         $requestLocale = Yalt::getLocaleFromRequest();
 
         // Get user saved interface language
-        $userInterfaceLocale = ($user = Auth::user()) ? $user->getInterfaceLocale() : null;
+        $userInterfaceLocale = ($user = Auth::user()) ? $user->getLocale() : null;
 
         // TODO: слать Accept-Language, только если нужно переопределить язык пользователя
         // Set app to selected language
