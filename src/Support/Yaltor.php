@@ -70,7 +70,7 @@ class Yaltor
      */
     public function getLocaleFromRequest()
     {
-        return static::isValidLocale($requestLocale = \Request::header('Accept-Language')) ?
+        return static::isValidLocale($requestLocale = strtolower(\Request::header('Accept-Language'))) ?
             $requestLocale : null;
     }
 
