@@ -70,7 +70,7 @@ class Translation extends Model
      * @param  array   $attributes
      * @param  Model  $parent
      */
-    public function __construct(array $attributes = [], Model $parent)
+    public function __construct(array $attributes = [], Model $parent = null)
     {
         parent::__construct($attributes);
 

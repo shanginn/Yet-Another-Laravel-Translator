@@ -13,7 +13,7 @@ use Yalt;
 
 /**
  * @property array $translatable Array with the fields translated in the Localizations table.
- * @property Collection[Translation] $this->translations
+ * @property \Illuminate\Database\Eloquent\Collection|Translation $translations
  *
  * @mixin Model
  */
@@ -182,7 +182,7 @@ trait Translatable
     /**
      *
      * @param string $locale
-     * @param bool        $withFallback
+     * @param bool   $withFallback
      *
      * @return array
      */
@@ -201,7 +201,7 @@ trait Translatable
 
     /**
      * @param $locale
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Translation|null
      */
     protected function getTranslationFor($locale)
     {
@@ -218,6 +218,14 @@ trait Translatable
     {
         if (count($this->translatableFromArray($attributes))) {
             foreach ($this->extractTranslationsFromAttributes($attributes) as $locale => $values) {
+                // Delete row if all of the values are NULL's
+//                if (!array_filter($values)) {
+//                    if ($translation = $this->getTranslationFor($locale)) {
+//                        $this->translations()->find($translation->id)->delete();
+//                    }
+//                } else {
+//
+//                }
                 $this->translationTo($locale)->fill($values);
             }
         }
@@ -252,7 +260,7 @@ trait Translatable
         foreach ($this->translations as $translation) {
             foreach ($this->getTranslatable() as $field) {
                 isset($translated[$field]) || $translated[$field] = (object) [];
-                $translated[$field]->{$translation->locale} = $translation->$field;
+                $translation->$field && $translated[$field]->{$translation->locale} = $translation->$field;
             }
         }
 
