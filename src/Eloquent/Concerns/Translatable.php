@@ -147,17 +147,6 @@ trait Translatable
         return $translations;
     }
 
-    public function translationTo($locale)
-    {
-        if (is_null($translation = $this->getTranslationFor($locale))) {
-            $translation = $this->newTranslation(['locale' => $locale]);
-
-            $this->translations->add($translation);
-        }
-
-        return $translation;
-    }
-
     /**
      * Get the translatable attributes for the model.
      *
@@ -200,12 +189,31 @@ trait Translatable
     }
 
     /**
+     * Gets existing translation for locale or null
+     *
      * @param $locale
      * @return Translation|null
      */
     protected function getTranslationFor($locale)
     {
         return $this->translations->where($this->getLocaleKey(), $locale)->first();
+    }
+
+    /**
+     * Provides existing or create new translation for givvin locale
+     *
+     * @param $locale
+     * @return Translation
+     */
+    public function translationTo($locale)
+    {
+        if (is_null($translation = $this->getTranslationFor($locale))) {
+            $translation = $this->newTranslation(['locale' => $locale]);
+
+            $this->translations->add($translation);
+        }
+
+        return $translation;
     }
 
     /**
@@ -217,16 +225,25 @@ trait Translatable
     public function fill(array $attributes)
     {
         if (count($this->translatableFromArray($attributes))) {
+            $translatableAttributesKeys = array_flip($this->getTranslatable());
+
             foreach ($this->extractTranslationsFromAttributes($attributes) as $locale => $values) {
+                // Get existing translation or make new and fill it with values (add later)
+                $translation = ($this->getTranslationFor($locale) ?? $this->newTranslation(['locale' => $locale]))
+                    ->fill($values);
+
+                // Get values of translatable attributes
+                $translatedAttributes = array_intersect_key($translation->getAttributes(), $translatableAttributesKeys);
+
                 // Delete row if all of the values are NULL's
-//                if (!array_filter($values)) {
-//                    if ($translation = $this->getTranslationFor($locale)) {
-//                        $this->translations()->find($translation->id)->delete();
-//                    }
-//                } else {
-//
-//                }
-                $this->translationTo($locale)->fill($values);
+                if (!array_filter($translatedAttributes)) {
+                    if ($translationRow = $this->translations()->find($translation->id)) {
+                        $translationRow->delete();
+                        //TODO: unset deleted row from $this->translations
+                    }
+                } elseif (!$translation->exists) {
+                    $this->translations->add($translation);
+                }
             }
         }
 
@@ -260,7 +277,7 @@ trait Translatable
         foreach ($this->translations as $translation) {
             foreach ($this->getTranslatable() as $field) {
                 isset($translated[$field]) || $translated[$field] = (object) [];
-                $translation->$field && $translated[$field]->{$translation->locale} = $translation->$field;
+                !is_null($translation->$field) && $translated[$field]->{$translation->locale} = $translation->$field;
             }
         }
 
