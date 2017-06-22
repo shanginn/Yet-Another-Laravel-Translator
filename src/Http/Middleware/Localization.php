@@ -24,9 +24,8 @@ class Localization
         // Get user saved interface language
         $userInterfaceLocale = ($user = Auth::user()) ? $user->getLocale() : null;
 
-        // TODO: слать Accept-Language, только если нужно переопределить язык пользователя
         // Set app to selected language
-        if ($locale = $userInterfaceLocale ?? $requestLocale) {
+        if ($locale = $requestLocale ?? $userInterfaceLocale) {
             App::setLocale($locale);
         }
 
