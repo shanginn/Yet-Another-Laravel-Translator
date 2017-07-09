@@ -24,8 +24,11 @@ class Localization
         // Get user saved interface language
         $userInterfaceLocale = ($user = Auth::user()) ? $user->getLocale() : null;
 
+        // Set the fallback locale
+        $fallbackLocale = config('app.locale');
+
         // Set app to selected language
-        if ($locale = $requestLocale ?? $userInterfaceLocale) {
+        if ($locale = $requestLocale ?? $userInterfaceLocale ?? $fallbackLocale) {
             App::setLocale($locale);
         }
 
