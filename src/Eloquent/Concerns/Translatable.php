@@ -94,6 +94,32 @@ trait Translatable
     }
 
     /**
+     * Get translatable attributes that have been changed since last sync.
+     *
+     * @return array
+     */
+    public function getDirty()
+    {
+        $dirty = parent::getDirty();
+
+        $dirtyTranslations = $this->translations->reduce(function ($array, Model $translation) {
+            $array[$translation->locale] = $translation->getDirty();
+
+            return $array;
+        });
+
+        foreach ($dirtyTranslations as $locale => $translations) {
+            foreach ($translations as $key => $value) {
+                !isset($dirty[$key]) && $dirty[$key] = [];
+
+                $dirty[$key][$locale] = $value;
+            }
+        }
+
+        return $dirty;
+    }
+
+    /**
      * Create a new Translation model instance for a related model.
      *
      * @param array $attributes
@@ -109,7 +135,7 @@ trait Translatable
     }
 
     /**
-     * Get the translatable attributes of a given array.
+     * Get translatable attributes of a given array.
      *
      * @param  array  $attributes
      * @return array
