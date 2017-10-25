@@ -106,7 +106,7 @@ trait Translatable
             $array[$translation->locale] = $translation->getDirty();
 
             return $array;
-        });
+        }, []);
 
         foreach ($dirtyTranslations as $locale => $translations) {
             foreach ($translations as $key => $value) {
