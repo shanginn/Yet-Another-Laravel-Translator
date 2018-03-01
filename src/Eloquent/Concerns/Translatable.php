@@ -335,7 +335,8 @@ trait Translatable
         foreach ($this->translations as $translation) {
             foreach ($this->getTranslatable() as $field) {
                 isset($translated[$field]) || $translated[$field] = (object) [];
-                !is_null($translation->$field) && $translated[$field]->{$translation->locale} = $translation->$field;
+
+                $translated[$field]->{$translation->locale} = $translation->$field;
             }
         }
 
