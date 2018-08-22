@@ -2,6 +2,7 @@
 
 namespace Shanginn\Yalt\Http\Middleware;
 
+use Carbon\Carbon;
 use Closure;
 use App;
 use Yalt;
