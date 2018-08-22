@@ -74,6 +74,31 @@ class Yaltor
             $requestLocale : null;
     }
 
+    /**
+     * @param $lang
+     * @return string
+     */
+    public function getSystemLocaleFromLang($lang)
+    {
+        switch ($lang) {
+            case 'ru':
+                $systemLocale = 'ru_RU.UTF8';
+                break;
+
+            case 'fr':
+                $systemLocale = 'fr_FR.UTF8';
+                break;
+            default:
+                $systemLocale = 'en_GB.UTF8';
+        }
+
+        return $systemLocale;
+    }
+
+    /**
+     * @param $locale
+     * @return bool
+     */
     public static function isValidLocale($locale)
     {
         return in_array($locale, static::getLocales());

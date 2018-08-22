@@ -29,7 +29,11 @@ class Localization
 
         // Set app to selected language
         if ($locale = $requestLocale ?? $userInterfaceLocale ?? $fallbackLocale) {
+            $systemLocale = \Yalt::getSystemLocaleFromLang($locale);
+
             App::setLocale($locale);
+            Carbon::setLocale($locale);
+            setlocale(LC_TIME, $systemLocale);
         }
 
         // get the response after the request is done
