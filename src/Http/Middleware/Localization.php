@@ -34,7 +34,7 @@ class Localization
 
             App::setLocale($locale);
             Carbon::setLocale($locale);
-            setlocale(LC_TIME, $systemLocale);
+            setlocale(LC_ALL, $systemLocale);
         }
 
         // get the response after the request is done
