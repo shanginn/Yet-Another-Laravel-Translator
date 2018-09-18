@@ -2,6 +2,9 @@
 
 namespace Shanginn\Yalt\Support;
 
+use App;
+use Carbon\Carbon;
+
 class Yaltor
 {
     /**
