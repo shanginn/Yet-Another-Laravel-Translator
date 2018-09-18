@@ -150,4 +150,33 @@ class Yaltor
         //TODO: set this static var
         return static::$useTranslationFallback ?? config('translatable.use_fallback');
     }
+
+
+    /**
+     * @param $locale
+     * @param \Closure $callback
+     */
+    public function withLocale($locale, \Closure $callback)
+    {
+        $oldAppLocale = App::getLocale();
+
+        $this->setAllLocales($locale);
+
+        call_user_func($callback);
+
+        $this->setAllLocales($oldAppLocale);
+    }
+
+    /**
+     * @param $locale
+     */
+    public function setAllLocales($locale)
+    {
+        $locale = strtolower($locale);
+        $systemLocale = \Yalt::getSystemLocaleFromLang($locale);
+
+        App::setLocale($locale);
+        Carbon::setLocale($locale);
+        setlocale(LC_TIME, $systemLocale);
+    }
 }
