@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Shanginn\Yalt\Eloquent\Scopes\JoinTranslationsTable;
 use Shanginn\Yalt\Eloquent\Translation;
+use Shanginn\Yalt\Http\Exceptions\TranslationMustBeArrayException;
 use Shanginn\Yalt\Http\Exceptions\UnsupportedLocaleException;
 use Yalt;
 
@@ -190,6 +191,10 @@ trait Translatable
 
         foreach ($attributes as $key => $value) {
             if ($this->isTranslatable($key)) {
+                if (!is_array($value)) {
+                    throw new TranslationMustBeArrayException($key, $value);
+                }
+
                 foreach ($value as $locale => $localization) {
                     if (Yalt::isValidLocale($locale)) {
                         $translations[$locale][$key] = $localization;
