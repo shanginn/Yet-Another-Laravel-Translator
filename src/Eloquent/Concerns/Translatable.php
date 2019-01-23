@@ -191,7 +191,7 @@ trait Translatable
 
         foreach ($attributes as $key => $value) {
             if ($this->isTranslatable($key)) {
-                if (!is_iterable($value)) {
+                if (is_string($value)) {
                     throw new TranslationMustBeArrayException($key, $value);
                 }
 
