@@ -5,6 +5,7 @@ namespace Shanginn\Yalt\Http\Middleware;
 use Carbon\Carbon;
 use Closure;
 use App;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Yalt;
 use Auth;
 
@@ -22,8 +23,10 @@ class Localization
         // Read the language from Accept-Language header
         $requestLocale = Yalt::getLocaleFromRequest();
 
-        // Get user saved interface language
-        $userInterfaceLocale = ($user = Auth::user()) ? $user->getLocale() : null;
+        if (($user = Auth::user()) && $user instanceof HasLocalePreference) {
+            // Get user saved interface language
+            $userInterfaceLocale = $user->preferredLocale();
+        }
 
         // Set the fallback locale
         $fallbackLocale = config('app.locale');
