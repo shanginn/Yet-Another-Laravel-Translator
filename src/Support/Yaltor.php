@@ -180,6 +180,6 @@ class Yaltor
 
         App::setLocale($locale);
         Carbon::setLocale($locale);
-        setlocale(LC_TIME, $systemLocale);
+        setlocale(LC_ALL, $systemLocale);
     }
 }
