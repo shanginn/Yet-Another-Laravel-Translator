@@ -61,7 +61,7 @@ trait Translatable
     /**
      * Save all related translations
      *
-     * @return \Traversable|array
+     * @return iterable
      */
     public function saveTranslations()
     {

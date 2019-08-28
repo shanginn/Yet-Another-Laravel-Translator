@@ -91,6 +91,15 @@ class Yaltor
             case 'fr':
                 $systemLocale = 'fr_FR.UTF8';
                 break;
+
+            case 'et':
+                $systemLocale = 'et_EE.UTF8';
+                break;
+
+            case 'nl':
+                $systemLocale = 'nl_NL.UTF8';
+                break;
+
             default:
                 $systemLocale = 'en_GB.UTF8';
         }
