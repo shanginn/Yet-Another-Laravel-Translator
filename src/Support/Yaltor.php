@@ -73,8 +73,26 @@ class Yaltor
      */
     public function getLocaleFromRequest()
     {
-        return static::isValidLocale($requestLocale = strtolower(\Request::header('Accept-Language'))) ?
-            $requestLocale : null;
+        foreach (\Request::getLanguages() as $language) {
+            if (static::isValidLocale($language)) {
+                return $language;
+            }
+        }
+
+        return null;
+    }
+
+    public function getValidLocalesFromRequest()
+    {
+        $locales = [];
+
+        foreach (\Request::getLanguages() as $language) {
+            if (static::isValidLocale($language)) {
+                $locales[] = $language;
+            }
+        }
+
+        return $locales;
     }
 
     /**
