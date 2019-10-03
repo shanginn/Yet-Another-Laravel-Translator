@@ -4,6 +4,7 @@ namespace Shanginn\Yalt\Support;
 
 use App;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class Yaltor
 {
@@ -169,7 +170,7 @@ class Yaltor
     {
         $parts = explode($this->getLocaleSeparator(), $locale);
 
-        return array_get($parts, 0);
+        return Arr::get($parts, 0);
     }
 
     /**
